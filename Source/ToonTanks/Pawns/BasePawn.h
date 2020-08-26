@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Samuel Carriere 2020
 
 #pragma once
 
@@ -24,15 +24,5 @@ private:
 	USceneComponent* ProjectileSpawnPoint;
 
 public:
-	// Sets default values for this pawn's properties
 	ABasePawn();
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 };
