@@ -17,7 +17,6 @@ APawnTank::APawnTank()
 void APawnTank::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void APawnTank::Tick(float DeltaTime)
