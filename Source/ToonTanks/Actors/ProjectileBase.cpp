@@ -27,16 +27,13 @@ void AProjectileBase::BeginPlay()
 
 void AProjectileBase::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Bullet HIT"))
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner) { return; }
 
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Bullet Apply damage"))
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyOwner->GetInstigatorController(), this, DamageType);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Bullet Destroy"))
 	Destroy();
 }
