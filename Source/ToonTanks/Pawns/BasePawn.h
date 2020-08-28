@@ -29,9 +29,9 @@ private:
 
 public:
 	ABasePawn();
+	virtual void HandleDestruction();
 
 protected:
 	void RotateTurret(FVector LookAtTarget);
 	void Fire();
-	virtual void HandleDestruction();
 };

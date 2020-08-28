@@ -26,10 +26,10 @@ private:
 	float ReturnDistanceToPlayer();
 
 public:
+	virtual void HandleDestruction() override;
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void HandleDestruction() override;
 };
