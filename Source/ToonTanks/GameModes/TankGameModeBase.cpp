@@ -10,20 +10,23 @@
 void ATankGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	UGameplayStatics::CreatePlayer(GetWorld());
 	HandleGameStart();
 }
 
 void ATankGameModeBase::ActorDied(AActor * DeadActor)
 {
-	if (DeadActor == PlayerTank)
+	if (APawnTank* DestroyPlayer = Cast<APawnTank>(DeadActor))
 	{
-		PlayerTank->HandleDestruction();
-		HandleGameOver(false);
-
-		if (PlayerControllerRef)
+		DestroyPlayer->HandleDestruction();
+		if (APlayerControllerBase* PlayerController = Cast<APlayerControllerBase>(DestroyPlayer->GetController()))
 		{
-			PlayerControllerRef->SetPlayerEnabledState(false);
+			PlayerController->SetPlayerEnabledState(false);
+		}
+
+		if (--PlayerCounts == 0)
+		{
+			HandleGameOver(false);
 		}
 	}
 	else if (APawnTurret* DestroyTurret = Cast<APawnTurret>(DeadActor))
@@ -46,19 +49,33 @@ int32 ATankGameModeBase::GetTargetTurretsCount()
 void ATankGameModeBase::HandleGameStart()
 {
 	TargetTurrets = GetTargetTurretsCount();
-	PlayerTank = Cast<APawnTank>(UGameplayStatics::GetPlayerPawn(this, 0));
-	PlayerControllerRef = Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(this, 0));
+
+	TArray<AActor*> PlayerActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APawnTank::StaticClass(), PlayerActors);
+
+	PlayerCounts = PlayerActors.Num();
+
+	for (AActor* Actor : PlayerActors)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("disabling actor"))
+		if (APawnTank* PlayerPawn = Cast<APawnTank>(Actor))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("disabling pawn"))
+			if (APlayerControllerBase* PlayerController = Cast<APlayerControllerBase>(PlayerPawn->GetController()))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("disabling controller"))
+				PlayerController->SetPlayerEnabledState(false);
+
+				FTimerHandle PlayerEnableHandle;
+				FTimerDelegate PlayerEnableDelegate = FTimerDelegate::CreateUObject(PlayerController,
+					&APlayerControllerBase::SetPlayerEnabledState, true);
+				GetWorld()->GetTimerManager().SetTimer(PlayerEnableHandle, PlayerEnableDelegate, StartDelay, false);
+			}
+		}
+
+	}
 
 	GameStart();
-	if (PlayerControllerRef)
-	{
-		PlayerControllerRef->SetPlayerEnabledState(false);
-
-		FTimerHandle PlayerEnableHandle;
-		FTimerDelegate PlayerEnableDelegate = FTimerDelegate::CreateUObject(PlayerControllerRef,
-			&APlayerControllerBase::SetPlayerEnabledState, true);
-		GetWorld()->GetTimerManager().SetTimer(PlayerEnableHandle, PlayerEnableDelegate, StartDelay, false);
-	}
 }
 
 void ATankGameModeBase::HandleGameOver(bool PlayerWon)

@@ -16,9 +16,8 @@ class TOONTANKS_API ATankGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 private:
-	APawnTank* PlayerTank;
 	int32 TargetTurrets = 0;
-	APlayerControllerBase* PlayerControllerRef;
+	int32 PlayerCounts = 0;
 
 	int32 GetTargetTurretsCount();
 	void HandleGameStart();
@@ -32,6 +31,7 @@ protected:
 	int32 StartDelay = 3;
 
 	virtual void BeginPlay() override;
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void GameStart();
 	UFUNCTION(BlueprintImplementableEvent)
