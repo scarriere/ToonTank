@@ -4,6 +4,7 @@
 #include "PawnTank.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "DrawDebugHelpers.h"
 
 APawnTank::APawnTank()
 {
@@ -27,13 +28,22 @@ void APawnTank::Tick(float DeltaTime)
 	Rotate();
 	Move();
 
-	if (PlayerControllerRef)
+	if (MouseAim && PlayerControllerRef)
 	{
 		FHitResult TraceHitResult;
 		PlayerControllerRef->GetHitResultUnderCursor(ECC_Visibility, false, TraceHitResult);
 		FVector HitLocation = TraceHitResult.ImpactPoint;
 
 		RotateTurret(HitLocation);
+	}
+	else
+	{
+		float Up = GetInputAxisValue("TurretForward");
+		float Right = GetInputAxisValue("TurretRight");
+		if (abs(Up) > .5f || abs(Right) > .5f) {
+			FRotator TargetRotation = FVector(-Up, Right, 0.f).Rotation();
+			TurretMesh->SetWorldRotation(GetActorRotation() + TargetRotation);
+		}
 	}
 }
 
@@ -42,6 +52,8 @@ void APawnTank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APawnTank::CalculateMoveInput);
 	PlayerInputComponent->BindAxis("Turn", this, &APawnTank::CalculateRotateInput);
+	PlayerInputComponent->BindAxis("TurretForward");
+	PlayerInputComponent->BindAxis("TurretRight");
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APawnTank::Fire);
 }
 

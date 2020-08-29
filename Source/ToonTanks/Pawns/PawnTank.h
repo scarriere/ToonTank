@@ -28,11 +28,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float RotateSpeed = 100.f;
 
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	bool MouseAim = true;
+
 	APlayerController* PlayerControllerRef;
 	bool IsPlayerAlive = true;
 
 	void CalculateMoveInput(float Value);
 	void CalculateRotateInput(float Value);
+	void CalculateTurretRotate(float Value);
 
 	void Move();
 	void Rotate();
